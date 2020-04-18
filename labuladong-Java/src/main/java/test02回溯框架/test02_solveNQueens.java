@@ -6,11 +6,10 @@ import java.util.List;
 public class test02_solveNQueens {
     // N 皇后问题
     public static void main(String[] args) {
-        String[][] board = new String[3][3];
-        Arrays.fill(board,".");
-        for (int i = 0; i < board.length; i++) {
-            System.out.println(Arrays.toString(board[i]));
-        }
+        String[][] a = new String[6][6];
+        Arrays.fill(a, "Hello");
+//        Arrays.fill(a, 3, 5,"World");
+        System.out.println(Arrays.toString(a));
     }
 
 }
