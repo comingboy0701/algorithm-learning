@@ -1,4 +1,4 @@
-package test148_sortList;
+package test06_链表;
 
 public class ListNode {
     int val;
@@ -11,6 +11,23 @@ public class ListNode {
         this.val = val;
     }
 
+    public void addNode(ListNode newNode){
+        if(this.next==null){
+            this.next = newNode;
+        }else{
+            this.next.addNode(newNode);
+        }
+    }
+
+    public void add(int num){
+        ListNode newNode = new ListNode(num);
+        if(this.next==null){
+            this.next = newNode;
+        }else{
+            this.next.addNode(newNode);
+        }
+    }
+
     @Override
     public String toString() {
         ListNode head= this;
@@ -21,4 +38,5 @@ public class ListNode {
         }
         return str.toString();
     }
+
 }
