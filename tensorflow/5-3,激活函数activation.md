@@ -17,6 +17,7 @@ https://zhuanlan.zhihu.com/p/98472075
 https://zhuanlan.zhihu.com/p/98863801
 
 
+
 ### 一，常用激活函数
 
 
@@ -56,6 +57,9 @@ https://zhuanlan.zhihu.com/p/98863801
 
 ![](./data/gelu.png)
 
+```python
+
+```
 
 ### 二，在模型中使用激活函数
 
@@ -75,4 +79,19 @@ model.add(layers.Dense(32,input_shape = (None,16),activation = tf.nn.relu)) #通
 model.add(layers.Dense(10))
 model.add(layers.Activation(tf.nn.softmax))  # 显式添加layers.Activation激活层
 model.summary()
+
+```
+
+```python
+
+```
+
+如果对本书内容理解上有需要进一步和作者交流的地方，欢迎在公众号"Python与算法之美"下留言。作者时间和精力有限，会酌情予以回复。
+
+也可以在公众号后台回复关键字：**加群**，加入读者交流群和大家讨论。
+
+![image.png](./data/Python与算法之美logo.jpg)
+
+```python
+
 ```

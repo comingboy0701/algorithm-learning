@@ -12,6 +12,7 @@
 
 如果有需要，也可以自定义损失函数，自定义损失函数需要接收两个张量y_true,y_pred作为输入参数，并输出一个标量作为损失函数值。
 
+
 ```python
 import numpy as np
 import pandas as pd
@@ -34,7 +35,24 @@ model.add(layers.Dense(10,
 model.compile(optimizer = "rmsprop",
         loss = "sparse_categorical_crossentropy",metrics = ["AUC"])
 model.summary()
+
 ```
+
+```
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense (Dense)                (None, 64)                4160      
+_________________________________________________________________
+dense_1 (Dense)              (None, 10)                650       
+=================================================================
+Total params: 4,810
+Trainable params: 4,810
+Non-trainable params: 0
+_________________________________________________________________
+```
+
 
 ### 二，内置损失函数
 
@@ -65,6 +83,9 @@ model.summary()
 
 * cosine_similarity(余弦相似度，可用于多分类，类实现形式为 CosineSimilarity)
 
+```python
+
+```
 
 ### 三，自定义损失函数
 
@@ -91,6 +112,7 @@ def focal_loss(gamma=2., alpha=0.25):
            -tf.reduce_sum((1-alpha) * tf.pow( pt_0, gamma) * tf.log(1. - pt_0 + 1e-07))
         return loss
     return focal_loss_fixed
+
 ```
 
 ```python
@@ -108,6 +130,16 @@ class FocalLoss(losses.Loss):
            -tf.reduce_sum((1-self.alpha) * tf.pow( pt_0, self.gamma) * tf.log(1. - pt_0 + 1e-07))
         return loss
 ```
+
+```python
+
+```
+
+如果对本书内容理解上有需要进一步和作者交流的地方，欢迎在公众号"Python与算法之美"下留言。作者时间和精力有限，会酌情予以回复。
+
+也可以在公众号后台回复关键字：**加群**，加入读者交流群和大家讨论。
+
+![image.png](./data/Python与算法之美logo.jpg)
 
 ```python
 

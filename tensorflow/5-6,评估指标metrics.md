@@ -61,6 +61,13 @@
 
 * Sum (求和)
 
+```python
+
+```
+
+```python
+
+```
 
 ### 二， 自定义评估指标
 
@@ -82,14 +89,7 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 from tensorflow.keras import layers,models,losses,metrics
-```
 
-```python
-y_true = tf.constant([[1],[1],[1],[0],[1],[1],[1],[0],[0],[0],[1],[0],[1],[0]])
-y_pred = tf.constant([[0.6],[0.1],[0.4],[0.5],[0.7],[0.7],[0.7],[0.4],[0.4],[0.5],[0.8],[0.3],[0.5],[0.3]])
-```
-
-```python
 #函数形式的自定义评估指标
 @tf.function
 def ks(y_true,y_pred):
@@ -112,6 +112,10 @@ y_true = tf.constant([[1],[1],[1],[0],[1],[1],[1],[0],[0],[0],[1],[0],[1],[0]])
 y_pred = tf.constant([[0.6],[0.1],[0.4],[0.5],[0.7],[0.7],[0.7],
                       [0.4],[0.4],[0.5],[0.8],[0.3],[0.5],[0.3]])
 tf.print(ks(y_true,y_pred))
+```
+
+```
+0.625
 ```
 
 ```python
@@ -158,8 +162,19 @@ y_pred = tf.constant([[0.6],[0.1],[0.4],[0.5],[0.7],[0.7],
 myks = KS()
 myks.update_state(y_true,y_pred)
 tf.print(myks.result())
+
+```
+
+```
+0.625
 ```
 
 ```python
 
 ```
+
+如果对本书内容理解上有需要进一步和作者交流的地方，欢迎在公众号"Python与算法之美"下留言。作者时间和精力有限，会酌情予以回复。
+
+也可以在公众号后台回复关键字：**加群**，加入读者交流群和大家讨论。
+
+![image.png](./data/Python与算法之美logo.jpg)

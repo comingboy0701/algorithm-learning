@@ -18,6 +18,15 @@ TensorFlow 2.0主要使用的是动态计算图和Autograph。
 
 上篇我们介绍了Autograph的编码规范，本篇我们介绍Autograph的机制原理。
 
+
+
+### 一，Autograph的机制原理
+
+
+**当我们使用@tf.function装饰一个函数的时候，后面到底发生了什么呢？**
+
+例如我们写下如下代码。
+
 ```python
 import tensorflow as tf
 import numpy as np 
@@ -39,6 +48,13 @@ def myadd(a,b):
 
 ```python
 myadd(tf.constant("hello"),tf.constant("world"))
+```
+
+```
+tracing
+0
+1
+2
 ```
 
 <!-- #region -->
@@ -89,8 +105,15 @@ with tf.Session(graph=g) as sess:
 例如我们写下如下代码。
 
 ```python
-myadd(tf.constant("hello"),tf.constant("world"))
+myadd(tf.constant("good"),tf.constant("morning"))
 ```
+
+```
+0
+1
+2
+```
+
 
 只会发生一件事情，那就是上面步骤的第二步，执行计算图。
 
@@ -105,6 +128,23 @@ myadd(tf.constant("hello"),tf.constant("world"))
 myadd(tf.constant(1),tf.constant(2))
 ```
 
+```
+tracing
+0
+1
+2
+```
+
+
+由于输入参数的类型已经发生变化，已经创建的计算图不能够再次使用。
+
+需要重新做2件事情：创建新的计算图、执行计算图。
+
+所以我们又会先看到的是第一个步骤的结果：即Python调用标准输出流打印"tracing"语句。
+
+然后再看到第二个步骤的结果：TensorFlow调用标准输出流打印1,2,3。
+
+
 **需要注意的是，如果调用被@tf.function装饰的函数时输入的参数不是Tensor类型，则每次都会重新创建计算图。**
 
 例如我们写下如下代码。两次都会重新创建计算图。因此，一般建议调用@tf.function时应传入Tensor类型。
@@ -112,6 +152,25 @@ myadd(tf.constant(1),tf.constant(2))
 ```python
 myadd("hello","world")
 myadd("good","morning")
+```
+
+```
+tracing
+0
+1
+2
+tracing
+0
+1
+2
+```
+
+```python
+
+```
+
+```python
+
 ```
 
 ### 二，重新理解Autograph的编码规范
@@ -132,3 +191,18 @@ myadd("good","morning")
 3，被@tf.function修饰的函数不可修改该函数外部的Python列表或字典等数据结构变量。
 
 解释：静态计算图是被编译成C++代码在TensorFlow内核中执行的。Python中的列表和字典等数据结构变量是无法嵌入到计算图中，它们仅仅能够在创建计算图时被读取，在执行计算图时是无法修改Python中的列表或字典这样的数据结构变量的。
+
+
+```python
+
+```
+
+如果对本书内容理解上有需要进一步和作者交流的地方，欢迎在公众号"Python与算法之美"下留言。作者时间和精力有限，会酌情予以回复。
+
+也可以在公众号后台回复关键字：**加群**，加入读者交流群和大家讨论。
+
+![image.png](./data/Python与算法之美logo.jpg)
+
+```python
+
+```

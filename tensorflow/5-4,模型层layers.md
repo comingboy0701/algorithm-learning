@@ -14,6 +14,9 @@ layers.Embedding,layers.GRU,layers.LSTM,layers.Bidirectional等等。
 
 其中tf.keras.Lambda匿名模型层只适用于构造没有学习参数的模型层。
 
+```python
+
+```
 
 ### 一，内置模型层
 
@@ -106,6 +109,9 @@ layers.Embedding,layers.GRU,layers.LSTM,layers.Bidirectional等等。
 
 * TimeDistributed：时间分布包装器。包装后可以将Dense、Conv2D等作用到每一个时间片段上。
 
+```python
+
+```
 
 ### 二，自定义模型层
 
@@ -122,11 +128,14 @@ Lambda层的正向逻辑可以使用Python的lambda函数来表达，也可以�
 import tensorflow as tf
 from tensorflow.keras import layers,models,regularizers
 
-data = tf.range(1,10)
 mypower = layers.Lambda(lambda x:tf.math.pow(x,2))
-tf.print(mypower(data))
+mypower(tf.range(5))
+```
 
 ```
+<tf.Tensor: shape=(5,), dtype=int32, numpy=array([ 0,  1,  4,  9, 16], dtype=int32)>
+```
+
 
 Layer的子类化一般需要重新实现初始化方法，Build方法和Call方法。下面是一个简化的线性层的范例，类似Dense.
 
@@ -156,6 +165,7 @@ class Linear(layers.Layer):
         config = super(Linear, self).get_config()
         config.update({'units': self.units})
         return config
+
 ```
 
 ```python
@@ -166,11 +176,21 @@ linear.build(input_shape = (None,16))
 print(linear.built)
 ```
 
+```
+False
+True
+```
+
 ```python
 linear = Linear(units = 8)
 print(linear.built)
 linear.build(input_shape = (None,16)) 
 print(linear.compute_output_shape(input_shape = (None,16)))
+```
+
+```
+False
+(None, 8)
 ```
 
 ```python
@@ -183,6 +203,12 @@ config = linear.get_config()
 print(config)
 ```
 
+```
+False
+True
+{'name': 'linear_3', 'trainable': True, 'dtype': 'float32', 'units': 16}
+```
+
 ```python
 tf.keras.backend.clear_session()
 
@@ -192,6 +218,21 @@ model.add(Linear(units = 1,input_shape = (2,)))
 print("model.input_shape: ",model.input_shape)
 print("model.output_shape: ",model.output_shape)
 model.summary()
+```
+
+```
+model.input_shape:  (None, 2)
+model.output_shape:  (None, 1)
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+linear (Linear)              (None, 1)                 3         
+=================================================================
+Total params: 3
+Trainable params: 3
+Non-trainable params: 0
+_________________________________________________________________
 ```
 
 ```python
@@ -210,8 +251,22 @@ print(model_loaded_keras.predict(tf.constant([[3.0,2.0],[4.0,5.0]])))
 model.save("./data/linear_model",save_format = "tf")
 model_loaded_tf = tf.keras.models.load_model("./data/linear_model")
 print(model_loaded_tf.predict(tf.constant([[3.0,2.0],[4.0,5.0]])))
-```
-
-```python
 
 ```
+
+```
+[[-0.04092304]
+ [-0.06150477]]
+[[-0.04092304]
+ [-0.06150477]]
+INFO:tensorflow:Assets written to: ./data/linear_model/assets
+[[-0.04092304]
+ [-0.06150477]]
+```
+
+
+如果对本书内容理解上有需要进一步和作者交流的地方，欢迎在公众号"Python与算法之美"下留言。作者时间和精力有限，会酌情予以回复。
+
+也可以在公众号后台回复关键字：**加群**，加入读者交流群和大家讨论。
+
+![image.png](./data/Python与算法之美logo.jpg)

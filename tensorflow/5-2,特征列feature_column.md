@@ -2,6 +2,21 @@
 
 特征列 通常用于对结构化数据实施特征工程时候使用，图像或者文本数据一般不会用到特征列。
 
+
+### 一，特征列用法概述
+
+
+使用特征列可以将类别特征转换为one-hot编码特征，将连续特征构建分桶特征，以及对多个特征生成交叉特征等等。
+
+
+要创建特征列，请调用 tf.feature_column 模块的函数。该模块中常用的九个函数如下图所示，所有九个函数都会返回一个 Categorical-Column 或一个 
+Dense-Column 对象，但却不会返回 bucketized_column，后者继承自这两个类。
+
+注意：所有的Catogorical Column类型最终都要通过indicator_column转换成Dense Column类型才能传入模型！
+
+
+![](./data/特征列9种.jpg)
+
 <!-- #region -->
 * numeric_column 数值列，最常用。
 
@@ -48,21 +63,10 @@ from tensorflow.keras import layers,models
 def printlog(info):
     nowtime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     print("\n"+"=========="*8 + "%s"%nowtime)
-    print(info+'...\n\n') 
-```
-
-### 二，特征列使用范例
+    print(info+'...\n\n')
 
 
-以下是一个使用特征列解决Titanic生存问题的完整范例。
-
-```python
-import datetime
-import numpy as np
-import pandas as pd
-from matplotlib import pyplot as plt
-import tensorflow as tf
-from tensorflow.keras import layers,models
+    
 ```
 
 ```python
@@ -98,6 +102,8 @@ dfdata = prepare_dfdata(dfraw)
 dftrain = dfdata.iloc[0:len(dftrain_raw),:]
 dftest = dfdata.iloc[len(dftrain_raw):,:]
 
+
+
 # 从 dataframe 导入数据 
 def df_to_dataset(df, shuffle=True, batch_size=32):
     dfdata = df.copy()
@@ -122,6 +128,7 @@ ds_test = df_to_dataset(dftest)
 printlog("step2: make feature columns...")
 
 feature_columns = []
+
 # 数值列
 for col in ['age','fare','parch','sibsp'] + [
     c for c in dfdata.columns if c.endswith('_nan')]:
@@ -167,6 +174,7 @@ crossed_feature = tf.feature_column.indicator_column(
     tf.feature_column.crossed_column([age_buckets, pclass_cate],hash_bucket_size=15))
 
 feature_columns.append(crossed_feature)
+
 ```
 
 ```python
@@ -197,7 +205,7 @@ model.compile(optimizer='adam',
 
 history = model.fit(ds_train,
           validation_data=ds_test,
-          epochs=20)
+          epochs=10)
 ```
 
 ```python
@@ -229,18 +237,34 @@ def plot_metric(history, metric):
 plot_metric(history,"accuracy")
 ```
 
+```
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_features (DenseFeature multiple                  64        
+_________________________________________________________________
+dense (Dense)                multiple                  3008      
+_________________________________________________________________
+dense_1 (Dense)              multiple                  4160      
+_________________________________________________________________
+dense_2 (Dense)              multiple                  65        
+=================================================================
+Total params: 7,297
+Trainable params: 7,297
+Non-trainable params: 0
+_________________________________________________________________
+```
+
+
+![](./data/5-2-01-模型评估.jpg)
+
 ```python
 
 ```
 
-```python
+如果对本书内容理解上有需要进一步和作者交流的地方，欢迎在公众号"Python与算法之美"下留言。作者时间和精力有限，会酌情予以回复。
 
-```
+也可以在公众号后台回复关键字：**加群**，加入读者交流群和大家讨论。
 
-```python
-
-```
-
-```python
-
-```
+![image.png](./data/Python与算法之美logo.jpg)

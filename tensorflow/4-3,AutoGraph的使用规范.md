@@ -27,7 +27,11 @@ TensorFlow 2.0主要使用的是动态计算图和Autograph。
 * 2，避免在@tf.function修饰的函数内部定义tf.Variable. 
 
 * 3，被@tf.function修饰的函数不可修改该函数外部的Python列表或字典等数据结构变量。
+
 <!-- #endregion -->
+```python
+
+```
 
 ### 二，Autograph编码规范解析
 
@@ -38,9 +42,6 @@ TensorFlow 2.0主要使用的是动态计算图和Autograph。
 import numpy as np
 import tensorflow as tf
 
-```
-
-```python
 @tf.function
 def np_random():
     a = np.random.randn(3,3)
@@ -56,10 +57,30 @@ def tf_random():
 #np_random每次执行都是一样的结果。
 np_random()
 np_random()
+```
 
-tf.print("=="*8)
+```
+array([[ 0.22619201, -0.4550123 , -0.42587565],
+       [ 0.05429906,  0.2312667 , -1.44819738],
+       [ 0.36571796,  1.45578986, -1.05348983]])
+array([[ 0.22619201, -0.4550123 , -0.42587565],
+       [ 0.05429906,  0.2312667 , -1.44819738],
+       [ 0.36571796,  1.45578986, -1.05348983]])
+```
+
+```python
+#tf_random每次执行都会有重新生成随机数。
 tf_random()
 tf_random()
+```
+
+```
+[[-1.38956189 -0.394843668 0.420657277]
+ [2.87235498 -1.33740318 -0.533843279]
+ [0.918233037 0.118598573 -0.399486482]]
+[[-0.858178258 1.67509317 0.511889517]
+ [-0.545829177 -2.20118237 -0.968222201]
+ [0.733958483 -0.61904633 0.77440238]]
 ```
 
 ```python
@@ -94,20 +115,74 @@ def inner_var():
 #执行将报错
 #inner_var()
 #inner_var()
+
 ```
+
+```
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+<ipython-input-12-c95a7c3c1ddd> in <module>
+      7 
+      8 #执行将报错
+----> 9 inner_var()
+     10 inner_var()
+
+~/anaconda3/lib/python3.7/site-packages/tensorflow_core/python/eager/def_function.py in __call__(self, *args, **kwds)
+    566         xla_context.Exit()
+    567     else:
+--> 568       result = self._call(*args, **kwds)
+    569 
+    570     if tracing_count == self._get_tracing_count():
+......
+ValueError: tf.function-decorated function tried to create variables on non-first call.
+```
+
 
 **3,被@tf.function修饰的函数不可修改该函数外部的Python列表或字典等结构类型变量。**
 
 ```python
 tensor_list = []
-# @tf.function #加上这一行切换成Autograph结果将不符合预期！！！
+
+#@tf.function #加上这一行切换成Autograph结果将不符合预期！！！
 def append_tensor(x):
     tensor_list.append(x)
     return tensor_list
 
 append_tensor(tf.constant(5.0))
 append_tensor(tf.constant(6.0))
-append_tensor(tf.constant(7.0))
+print(tensor_list)
 
-tf.print(tensor_list)
 ```
+
+```
+[<tf.Tensor: shape=(), dtype=float32, numpy=5.0>, <tf.Tensor: shape=(), dtype=float32, numpy=6.0>]
+```
+
+```python
+tensor_list = []
+
+@tf.function #加上这一行切换成Autograph结果将不符合预期！！！
+def append_tensor(x):
+    tensor_list.append(x)
+    return tensor_list
+
+
+append_tensor(tf.constant(5.0))
+append_tensor(tf.constant(6.0))
+print(tensor_list)
+
+```
+
+```
+[<tf.Tensor 'x:0' shape=() dtype=float32>]
+```
+
+```python
+
+```
+
+如果对本书内容理解上有需要进一步和作者交流的地方，欢迎在公众号"Python与算法之美"下留言。作者时间和精力有限，会酌情予以回复。
+
+也可以在公众号后台回复关键字：**加群**，加入读者交流群和大家讨论。
+
+![image.png](./data/Python与算法之美logo.jpg)
