@@ -49,7 +49,19 @@ X = tf.random.uniform([n,2],minval=-10,maxval=10)
 w0 = tf.constant([[2.0],[-3.0]])
 b0 = tf.constant([[3.0]])
 Y = X@w0 + b0 + tf.random.normal([n,1],mean = 0.0,stddev= 2.0)  # @表示矩阵乘法,增加正态扰动
+```
 
+```python
+X = tf.random.uniform([32,2],minval=-10,maxval=10) 
+```
+
+```python
+# X@w1+b1
+```
+
+```python
+w1 = tf.constant([[2.0],[-3.0]])
+b1 = tf.constant([3.0])
 ```
 
 ```python
@@ -311,6 +323,8 @@ import numpy as np
 import pandas as pd 
 from matplotlib import pyplot as plt
 import tensorflow as tf
+from tensorflow.keras.utils import plot_model
+
 %matplotlib inline
 %config InlineBackend.figure_format = 'svg'
 
@@ -408,7 +422,7 @@ class DNNModel(tf.Module):
 
      
     # 正向传播
-    @tf.function(input_signature=[tf.TensorSpec(shape = [None,2], dtype = tf.float32)])  
+#     @tf.function(input_signature=[tf.TensorSpec(shape = [None,2], dtype = tf.float32)])  
     def __call__(self,x):
         x = tf.nn.relu(x@self.w1 + self.b1)
         x = tf.nn.relu(x@self.w2 + self.b2)
@@ -416,8 +430,8 @@ class DNNModel(tf.Module):
         return y
     
     # 损失函数(二元交叉熵)
-    @tf.function(input_signature=[tf.TensorSpec(shape = [None,1], dtype = tf.float32),
-                              tf.TensorSpec(shape = [None,1], dtype = tf.float32)])  
+#     @tf.function(input_signature=[tf.TensorSpec(shape = [None,1], dtype = tf.float32),
+#                               tf.TensorSpec(shape = [None,1], dtype = tf.float32)])  
     def loss_func(self,y_true,y_pred):  
         #将预测值限制在1e-7以上, 1-e-7以下，避免log(0)错误
         eps = 1e-7
@@ -426,8 +440,8 @@ class DNNModel(tf.Module):
         return  tf.reduce_mean(bce)
     
     # 评估指标(准确率)
-    @tf.function(input_signature=[tf.TensorSpec(shape = [None,1], dtype = tf.float32),
-                              tf.TensorSpec(shape = [None,1], dtype = tf.float32)]) 
+#     @tf.function(input_signature=[tf.TensorSpec(shape = [None,1], dtype = tf.float32),
+#                               tf.TensorSpec(shape = [None,1], dtype = tf.float32)]) 
     def metric_func(self,y_true,y_pred):
         y_pred = tf.where(y_pred>0.5,tf.ones_like(y_pred,dtype = tf.float32),
                           tf.zeros_like(y_pred,dtype = tf.float32))
@@ -435,6 +449,11 @@ class DNNModel(tf.Module):
         return acc
     
 model = DNNModel()
+```
+
+```python
+# model.summary()
+# plot_model(model, to_file='model.png',show_shapes=True)  
 ```
 
 ```python

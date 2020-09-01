@@ -209,7 +209,7 @@ Y = tf.concat([Yp,Yn],axis = 0)
 #样本洗牌
 data = tf.concat([X,Y],axis = 1)
 data = tf.random.shuffle(data)
-= data[:,:2]
+X = data[:,:2]
 Y = data[:,2:]
 
 
@@ -280,6 +280,12 @@ model = DNNModel()
 model.build(input_shape =(None,2))
 
 model.summary()
+```
+
+```python
+from tensorflow.keras.utils import plot_model
+model.summary()
+plot_model(model, to_file='model.png',show_shapes=True)  
 ```
 
 ```
