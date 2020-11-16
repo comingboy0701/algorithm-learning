@@ -92,7 +92,13 @@ right_cos = dot([q_encoded,a_right_encoded], -1, normalize=True)
 wrong_cos = dot([q_encoded,a_wrong_encoded], -1, normalize=True)
 
 loss = Lambda(lambda x: K.relu(margin+x[0]-x[1]))([wrong_cos,right_cos])
+```
 
+```python
+loss
+```
+
+```python
 model_train = Model(inputs=[q_input,a_right,a_wrong], outputs=loss)
 model_q_encoder = Model(inputs=q_input, outputs=q_encoded)
 model_a_encoder = Model(inputs=a_right, outputs=a_right_encoded)
@@ -107,6 +113,10 @@ model_a_encoder.compile(optimizer='adam', loss='mse')
 
 ```python
 plot_model(model_train,to_file='model.png',show_shapes=True)
+```
+
+```python
+
 ```
 
 ```python
