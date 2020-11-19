@@ -111,3 +111,4 @@ venv.bak/
 ..gitignore.un~
 .gitignore~
 keras/data/
+*.bin
