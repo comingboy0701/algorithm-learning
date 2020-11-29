@@ -4,8 +4,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static org.junit.Assert.*;
-
 public class test05_KMPTest {
     @Test
     public void KMP() throws Exception {
