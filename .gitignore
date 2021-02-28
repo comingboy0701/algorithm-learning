@@ -112,3 +112,8 @@ venv.bak/
 .gitignore~
 keras/data/
 *.bin
+word2vector/data/
+word2vector/data/
+model_vec_2.txt
+model_vec_1.txt
+model_vec.txt

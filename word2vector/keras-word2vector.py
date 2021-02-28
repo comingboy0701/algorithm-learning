@@ -68,7 +68,7 @@ vocab_size = 10000
 data, count, dictionary, reverse_dictionary = collect_data(vocabulary_size=vocab_size)
 print(data[:7])
 
-window_size = 3
+window_size = 5
 vector_dim = 300
 epochs = 200000
 
@@ -161,5 +161,12 @@ for cnt in range(epochs):
         print("Iteration {}, loss={}".format(cnt, loss))
     if cnt % 10000 == 0:
         sim_cb.run_sim()
+
+# +
+# labels
+
+# +
+# word_target
+# -
 
 

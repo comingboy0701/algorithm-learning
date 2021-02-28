@@ -1,7 +1,0 @@
-```python
-import gensim
-```
-
-```python
-
-```
