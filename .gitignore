@@ -117,3 +117,5 @@ word2vector/data/
 model_vec_2.txt
 model_vec_1.txt
 model_vec.txt
+siamese/
+lcqmc/
