@@ -19,13 +19,13 @@ public class test01 {
     }
 
     private int robHelper(int[] nums, int start, int end) {
-        int[][] dp = new int[end+1][2];
-        dp[0][0] = 0;
-        dp[0][1] = nums[start];
-        for (int j = start+1; j <= end; j++) {
-            dp[j][0] = Math.max(dp[j - 1][0], dp[j - 1][1]);
-            dp[j][1] = dp[j - 1][0] + nums[j];
+        int steal = 0, noSteal = 0;
+        for (int j = start; j <= end; j++) {
+            int temp = steal;
+            steal = noSteal + nums[j];
+            noSteal = Math.max(noSteal, temp);
         }
-        return  Math.max(dp[end][0], dp[end][1]);
+        return Math.max(steal, noSteal);
+
     }
 }
