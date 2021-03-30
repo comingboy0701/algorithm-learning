@@ -119,3 +119,4 @@ model_vec_1.txt
 model_vec.txt
 siamese/
 lcqmc/
+.DS_Store

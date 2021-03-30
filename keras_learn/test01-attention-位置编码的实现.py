@@ -1,4 +1,20 @@
 # -*- coding: utf-8 -*-
+def reverseString(s):
+    """
+    :type s: List[str]
+    :rtype: None Do not return anything, modify s in-place instead.
+    """
+    right = 0
+    left = len(s)-1
+    while (right<left):
+        s[right], s[left] = s[left], s[right]
+        right = right+1
+        left = left-1
+    return s
+
+
+reverseString(["a","b"])
+
 import tensorflow as tf
 import numpy as np
 
@@ -23,6 +39,8 @@ def Position_Embedding(inputs, position_size):
 # -
 
 inputs = tf.reshape(tf.range(0,320),[4,80])
+
+inputs.shape
 
 with tf.Session() as sess:
     result = sess.run(Position_Embedding(inputs, 100))

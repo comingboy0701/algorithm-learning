@@ -1,12 +1,13 @@
 # -*- coding:utf-8 -*-
-
 import re
 import numpy as np
 
 
-sents = open('../icwb2-data/training/msr_training.utf8').read()
-sents = sents.decode('utf-8').strip()
-sents = sents.split('\r\n') # 这个语料的换行符是\r\n
+sents = open('/Users/coming/datasets/icwb2-data/training/msr_training.utf8').read()
+# sents = sents.decode('utf-8').strip()
+sents = sents.strip()
+# sents = sents.split('\r\n') # 这个语料的换行符是\r\n
+sents = sents.split('\n') # 这个语料的换行符是\r\n
 
 sents = [re.split(' +', s) for s in sents] # 词之间以空格隔开
 sents = [[w for w in s if w] for s in sents] # 去掉空字符串
@@ -58,17 +59,23 @@ def train_generator(): # 定义数据生成器
                 X,Y = [],[]
 
 
+data_generator = train_generator()
+
+x, y = next(data_generator)
+
+x.shape
+
+y.shape
+
 from crf_keras import CRF
 from keras.layers import Dense, Embedding, Conv1D, Input
 from keras.models import Model # 这里我们学习使用Model型的模型
 import keras.backend as K # 引入Keras后端来自定义loss，注意Keras模型内的一切运算
-                          # 必须要通过Keras后端完成，比如取对数要用K.log不能用np.log
+# 必须要通过Keras后端完成，比如取对数要用K.log不能用np.log
 
 embedding_size = 128
 sequence = Input(shape=(None,), dtype='int32') # 建立输入层，输入长度设为None
-embedding = Embedding(len(chars)+1,
-                      embedding_size,
-                     )(sequence) # 去掉了mask_zero=True
+embedding = Embedding(len(chars)+1,embedding_size)(sequence) # 去掉了mask_zero=True
 cnn = Conv1D(128, 3, activation='relu', padding='same')(embedding)
 cnn = Conv1D(128, 3, activation='relu', padding='same')(cnn)
 cnn = Conv1D(128, 3, activation='relu', padding='same')(cnn) # 层叠了3层CNN
@@ -87,8 +94,8 @@ model.compile(loss=crf.loss, # 用crf自带的loss
 
 
 def max_in_dict(d): # 定义一个求字典中最大值的函数
-    key,value = d.items()[0]
-    for i,j in d.items()[1:]:
+    key,value = list(d.items())[0]
+    for i,j in list(d.items())[1:]:
         if j > value:
             key,value = i,j
     return key,value
@@ -152,11 +159,97 @@ class Evaluate(Callback):
         acc = right/total
         if acc > self.highest:
             self.highest = acc
-        print 'val acc: %s, highest: %s'%(acc, self.highest)
+        print ('val acc: %s, highest: %s'%(acc, self.highest))
 
 
 evaluator = Evaluate() # 建立Callback类
 model.fit_generator(train_generator(),
-                    steps_per_epoch=500,
-                    epochs=10,
+                    steps_per_epoch=100,
+                    epochs=1,
                     callbacks=[evaluator]) # 训练并将evaluator加入到训练过程
+
+_trans = model.get_weights()[-1][:4,:4] # 从训练模型中取出最新得到的转移矩阵
+
+_trans
+
+s= ["我喜欢自然语言处理","工具人加油"]
+test_sents = [['我', '喜欢', '自然', '语言', '处理', '工作'], ['工具人', '加油']]
+x_true,y_true = [],[]
+for i,s in enumerate(test_sents): # 遍历每个句子
+    sx,sy = [],[]
+    for w in s: # 遍历句子中的每个词
+        sx.extend([char2id.get(c, 0) for c in w]) # 遍历词中的每个字
+        if len(w) == 1:
+            sy.append(0) # 单字词的标签
+        elif len(w) == 2:
+            sy.extend([1,3]) # 双字词的标签
+        else:
+            sy.extend([1] + [2]*(len(w)-2) + [3]) # 多于两字的词的标签
+    x_true.append(sx)
+    y_true.append(sy)
+maxlen = max([len(x) for x in X]) # 找出最大字数
+x_true = [x+[0]*(maxlen-len(x)) for x in x_true] # 不足则补零
+y_true = [y+[4]*(maxlen-len(y)) for y in y_true] # 不足则补第五个标签
+x_true = np.array(x_true)
+y_true = to_categorical(y_true, 5)
+
+x_true.shape, y_true.shape
+
+x_true
+
+y_true
+
+y_pred = model.predict(x_true) # 模型预测
+
+y_pred
+
+mask = 1 - y_true[:, :, -1:]
+
+mask
+
+y_true, y_pred = y_true[:, :, :4], y_pred[:, :, :4]
+
+y_true
+
+y_pred
+
+# 真实标签和真实路径的得分
+point_score = K.sum(K.sum(y_pred * y_true, 2), 1, keepdims=True)  # 逐标签得分
+labels1 = K.expand_dims(y_true[:, :-1], 3)
+labels2 = K.expand_dims(y_true[:, 1:], 2)
+labels = labels1 * labels2  # 两个错位labels，负责从转移矩阵中抽取目标转移得分
+trans = K.expand_dims(K.expand_dims(_trans, 0), 0)
+trans_score = K.sum(K.sum(trans * labels, [2, 3]), 1, keepdims=True)
+
+# 全部标签和全部路径的分数
+path_score = point_score + trans_score
+path_score
+init_states = [y_pred[:, 0]]  # 初始状态
+
+init_states
+
+y_pred.shape, mask.shape
+
+y_pred = np.concatenate([y_pred, mask], axis=-1)
+
+
+def log_norm_step(inputs, states):
+    """递归计算归一化因子
+    要点：1、递归计算；2、用logsumexp避免溢出。
+    技巧：通过expand_dims来对齐张量。
+    """
+    inputs, mask = inputs[:, :-1], inputs[:, -1:]
+    states = K.expand_dims(states[0], 2)  # (batch_size, output_dim, 1)
+    trans = K.expand_dims(_trans, 0)  # (1, output_dim, output_dim)
+    outputs = K.logsumexp(states + trans, 1)  # (batch_size, output_dim)
+    outputs = outputs + inputs
+    outputs = mask * outputs + (1 - mask) * states[:, :, 0] # 如果是mask,那就不转移了，直接取status的分数
+    return outputs, [outputs]
+
+
+last_output, outputs, states = K.rnn(log_norm_step, y_pred[:, 1:], init_states)  # 计算Z向量（对数）
+log_norm = K.logsumexp(last_output, 1, keepdims=True)  # 计算Z（对数）
+
+log_norm
+
+
