@@ -2,7 +2,8 @@ package test05_排序;
 
 import java.util.Arrays;
 
-public class test02_quickSort {
+public class
+test02_quickSort {
 
     public static void main(String[] args) {
         int[] nums = {1,2, 12,3,3,1,1, 45,34,4};
