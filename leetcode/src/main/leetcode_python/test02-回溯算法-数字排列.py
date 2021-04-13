@@ -1,26 +1,21 @@
-str_list = []
-def genrate(num_count):
-    if 
-    
-    for key,value in num_count:
-        num_count[key] = value-1
-        if value>0:
-            
+import copy
+
+nums = "acb"
+res = []
+tmp = []
+def genrate(nums):
+    if (len(tmp) == len(nums)):
+        res.append(copy.deepcopy(tmp))
         
-    return 
-
-nums = "acba"
-sorted(nums)
-
-num_count = dict()
-for num in nums:
-    if num in num_count:
-        num_count[num] = num_count[num]+1
-    else:
-        num_count[num] = 1
-
-num_count
-
-genrate(num_count)
+    for num in nums:
+        if num in tmp:
+            continue
+        else:
+            tmp.append(num)
+            genrate(nums)
+        tmp.pop()
 
 
+genrate(nums)
+
+res
