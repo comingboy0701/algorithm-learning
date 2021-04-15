@@ -16,3 +16,4 @@ def minDistance(word1: str, word2: str) -> int:
                 dp[i][j] = min(dp[i-1][j-1],dp[i][j-1],dp[i-1][j])+1
     return dp[len(word1)][len(word2)]
 
+print(minDistance("abc","a"))
