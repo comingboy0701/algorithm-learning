@@ -5,8 +5,8 @@
 - 注意label是根据batch_size中的文本计算得出
 
 ```python
-from hydra.utils.gpu_usage import limit_gpu_memory
-limit_gpu_memory(int(2) * 1024, 1)
+# from hydra.utils.gpu_usage import limit_gpu_memory
+# limit_gpu_memory(int(2) * 1024, 1)
 ```
 
 ## 构建数据
@@ -157,8 +157,9 @@ class Loss(Layer):
         return inputs
 
     def compute_loss(self, inputs, mask=None):
-        loss1 = self.compute_loss_of_similarity(inputs,)
+        loss1,acc = self.compute_loss_of_similarity(inputs,)
         self.add_metric(loss1, name='similarity_loss')
+        self.add_metric(acc, name='similarity_acc')
         return loss1
         
     def compute_loss_of_similarity(self, y_pred,mask=None):
@@ -170,7 +171,8 @@ class Loss(Layer):
         loss = K.categorical_crossentropy(
             y_true, similarities, from_logits=True
         )
-        return loss
+        acc = keras.metrics.categorical_accuracy(y_true, similarities)
+        return loss, acc
 
     def get_labels_of_similarity(self, y_pred, mask=None):
         idxs = K.arange(0, K.shape(y_pred)[0])
@@ -243,64 +245,4 @@ steps_per_epoch = int(sum([ len(i) for i in train_text])/batch_size) #相当于�
 
 ```python
 model.fit_generator(train_genrate, steps_per_epoch=steps_per_epoch, epochs=20,callbacks=[evaluate])
-```
-
-```python
-'''
-
-Epoch 1/20
-202/202 [==============================] - 64s 318ms/step - loss: 2.4567 - similarity_loss: 2.4567
-20000/20000 [==============================] - 40s 2ms/step
-20000/20000 [==============================] - 40s 2ms/step
-best_acc: [0.66275], acc: [0.66275]
-Epoch 2/20
-202/202 [==============================] - 63s 309ms/step - loss: 1.9602 - similarity_loss: 1.9602
-20000/20000 [==============================] - 40s 2ms/step
-20000/20000 [==============================] - 40s 2ms/step
-best_acc: [0.66415], acc: [0.66415]
-Epoch 3/20
-202/202 [==============================] - 63s 314ms/step - loss: 1.8104 - similarity_loss: 1.8104
-20000/20000 [==============================] - 37s 2ms/step
-20000/20000 [==============================] - 39s 2ms/step
-best_acc: [0.673], acc: [0.673]
-Epoch 4/20
-202/202 [==============================] - 59s 291ms/step - loss: 1.6254 - similarity_loss: 1.6254
-20000/20000 [==============================] - 38s 2ms/step
-20000/20000 [==============================] - 38s 2ms/step
-best_acc: [0.67425], acc: [0.67425]
-Epoch 5/20
-202/202 [==============================] - 61s 302ms/step - loss: 1.7714 - similarity_loss: 1.7714
-20000/20000 [==============================] - 40s 2ms/step
-20000/20000 [==============================] - 41s 2ms/step
-best_acc: [0.67545], acc: [0.67545]
-Epoch 6/20
-202/202 [==============================] - 62s 309ms/step - loss: 1.4916 - similarity_loss: 1.4916
-20000/20000 [==============================] - 41s 2ms/step
-20000/20000 [==============================] - 41s 2ms/step
-best_acc: [0.67545], acc: [0.673]
-Epoch 7/20
-202/202 [==============================] - 62s 309ms/step - loss: 1.4082 - similarity_loss: 1.4082
-20000/20000 [==============================] - 41s 2ms/step
-20000/20000 [==============================] - 41s 2ms/step
-best_acc: [0.67545], acc: [0.66565]
-Epoch 8/20
-202/202 [==============================] - 63s 313ms/step - loss: 1.3708 - similarity_loss: 1.3708
-20000/20000 [==============================] - 42s 2ms/step
-20000/20000 [==============================] - 41s 2ms/step
-best_acc: [0.67545], acc: [0.66685]
-Epoch 9/20
-202/202 [==============================] - 62s 309ms/step - loss: 1.3681 - similarity_loss: 1.3681
-20000/20000 [==============================] - 41s 2ms/step
-20000/20000 [==============================] - 41s 2ms/step
-best_acc: [0.67545], acc: [0.6675]
-Epoch 10/20
-202/202 [==============================] - 63s 310ms/step - loss: 1.3425 - similarity_loss: 1.3425
-20000/20000 [==============================] - 41s 2ms/step
-20000/20000 [==============================] - 41s 2ms/step
-best_acc: [0.67545], acc: [0.666]
-Epoch 11/20
-202/202 [==============================] - 63s 309ms/step - loss: 1.2651 - similarity_loss: 1.2651
-17504/20000 [=========================>....] - ETA: 5s
-
-'''
 ```

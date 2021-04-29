@@ -8,8 +8,8 @@ Siamese network就是“连体的神经网络”，神经网络的“连体”�
 siamese network的作用是衡量两个输入的相似程度。孪生神经网络有两个输入（Input1 and Input2）,将两个输入feed进入两个神经网络（Network1 and Network2），这两个神经网络分别将输入映射到新的空间，形成输入在新的空间中的表示。通过Loss的计算，评价两个输入的相似度。
 
 ```python
-from hydra.utils.gpu_usage import limit_gpu_memory
-limit_gpu_memory(int(2) * 1024, 1)
+# from hydra.utils.gpu_usage import limit_gpu_memory
+# limit_gpu_memory(int(2) * 1024, 1)
 ```
 
 ### 构建数据
