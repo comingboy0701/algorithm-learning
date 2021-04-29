@@ -44,7 +44,7 @@ embedding_matrix.shape
 train_data_path = "./data/train.txt"
 test_data_path =  "./data/test.txt"
 
-max_len = 128  # 每个样本保留300个词的长度
+max_len = 128  # 每个样本保留128个词的长度
 ```
 
 ```python
